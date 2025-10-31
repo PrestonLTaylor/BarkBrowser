@@ -1,0 +1,1 @@
+// NOTE: Empty as using default Catch2 main and using test discovery

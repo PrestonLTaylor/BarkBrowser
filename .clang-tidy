@@ -1,3 +1,6 @@
 ---
 Checks: 'clang-diagnostic-*,clang-analyzer-*,cppcoreguidelines-*,modernize-*,-modernize-use-trailing-return-type'
 WarningsAsErrors: 'clang-diagnostic-*,clang-analyzer-*,cppcoreguidelines-*,modernize-*'
+
+# NOTE: This allows .clang-tidy to be overriden for the test directory
+HeaderFilterRegex: ''
