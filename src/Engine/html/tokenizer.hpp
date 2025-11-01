@@ -22,7 +22,12 @@ public:
 private:
     void reset_tokenizer_state() noexcept;
 
+    [[nodiscard]] char peek();
+    char consume();
     [[nodiscard]] bool can_consume() noexcept;
+
+    void skip_ascii_whitespace();
+    [[nodiscard]] bool is_whitespace();
 
     std::string_view m_html;
     std::uint32_t m_html_index;
