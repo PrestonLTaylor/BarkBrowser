@@ -22,12 +22,20 @@ public:
 private:
     void reset_tokenizer_state() noexcept;
 
-    [[nodiscard]] char peek();
+    [[nodiscard]] char peek() const;
     char consume();
-    [[nodiscard]] bool can_consume() noexcept;
+    [[nodiscard]] bool
+    can_consume(std::uint32_t amount_to_consume = 1) const noexcept;
+    void skip(std::uint32_t to_skip = 1) noexcept;
+    bool skip_until_matches(std::string_view to_match);
+
+    bool matches(std::string_view to_match) const;
+    void skip_comments();
+    [[nodiscard]] bool is_comment() const;
+    void skip_to_end_of_comment();
 
     void skip_ascii_whitespace();
-    [[nodiscard]] bool is_whitespace();
+    [[nodiscard]] bool is_whitespace() const;
 
     std::string_view m_html;
     std::uint32_t m_html_index;

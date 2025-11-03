@@ -82,3 +82,58 @@ TEST_CASE("Tokenizing white space returns an empty vector of html_tokens",
         REQUIRE(result.size() == 0);
     }
 }
+
+TEST_CASE("Tokenizing comments returns an empty vector of html_tokens",
+          "[html, tokenizer]") {
+    SECTION(
+        "Tokenizing an empty comment returns an empty vector of html_tokens") {
+        // Arrange
+        html::tokenizer tokenizer_1("<!-->");
+        html::tokenizer tokenizer_2("<!--->");
+        html::tokenizer tokenizer_3("<!---->");
+
+        // Act
+        const auto result_1 = tokenizer_1.tokenize();
+        const auto result_2 = tokenizer_2.tokenize();
+        const auto result_3 = tokenizer_3.tokenize();
+
+        // Assert
+        REQUIRE(result_1.size() == 0);
+        REQUIRE(result_2.size() == 0);
+        REQUIRE(result_3.size() == 0);
+    }
+
+    SECTION("Tokenizing a comment with normal text returns an empty vector of "
+            "html_tokens") {
+        // Arrange
+        html::tokenizer tokenizer_1("<!-- -->");
+        html::tokenizer tokenizer_2(
+            "<!--My favorite operators are > and <!-->");
+        html::tokenizer tokenizer_3("<!-- > -->");
+        html::tokenizer tokenizer_4("<!-- -> -->");
+
+        // Act
+        const auto result_1 = tokenizer_1.tokenize();
+        const auto result_2 = tokenizer_2.tokenize();
+        const auto result_3 = tokenizer_3.tokenize();
+        const auto result_4 = tokenizer_4.tokenize();
+
+        // Assert
+        REQUIRE(result_1.size() == 0);
+        REQUIRE(result_2.size() == 0);
+        REQUIRE(result_3.size() == 0);
+        REQUIRE(result_4.size() == 0);
+    }
+
+    SECTION("Tokenizing a comment ending in --!> returns an empty vector of "
+            "html_tokens") {
+        // Arrange
+        html::tokenizer tokenizer("<!-- --!>");
+
+        // Act
+        const auto result = tokenizer.tokenize();
+
+        // Assert
+        REQUIRE(result.size() == 0);
+    }
+}
