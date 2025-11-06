@@ -19,9 +19,16 @@ std::vector<html_token> tokenizer::tokenize() {
     skip_ascii_whitespace();
 
     while (can_consume()) {
-        throw not_implemented_exception(std::format(
-            "Found '{}', tokenization of character is not yet implemented",
-            m_html[m_html_index]));
+        if (is_symbol()) {
+            html_tokens.push_back(tokenize_symbol());
+        } else {
+            throw not_implemented_exception(std::format(
+                "Found '{}', tokenization of character is not yet implemented",
+                m_html[m_html_index]));
+        }
+
+        skip_comments();
+        skip_ascii_whitespace();
     }
 
     return html_tokens;
@@ -31,7 +38,7 @@ void tokenizer::reset_tokenizer_state() noexcept { m_html_index = 0; }
 
 char tokenizer::peek() const { return m_html[m_html_index]; }
 
-char tokenizer::consume() { return m_html[m_html_index++]; }
+std::string_view tokenizer::consume() { return {&m_html[m_html_index++], 1}; }
 
 bool tokenizer::can_consume(std::uint32_t amount_to_consume) const noexcept {
     return m_html_index + (amount_to_consume - 1) < m_html.size();
@@ -125,6 +132,22 @@ bool tokenizer::is_whitespace() const {
     }
 
     return false;
+}
+
+bool tokenizer::is_symbol() const {
+    if (!can_consume()) {
+        return false;
+    }
+
+    return s_token_char_to_type.count(peek()) == 1;
+}
+
+html_token tokenizer::tokenize_symbol() {
+    // TODO: some sort of assert that prevents non-symbols from being
+    // tokenized instead of throwing
+    const auto token_value = consume();
+    const auto token_type = s_token_char_to_type.at(token_value[0]);
+    return {.type = token_type, .value = token_value};
 }
 
 } // namespace html

@@ -137,3 +137,64 @@ TEST_CASE("Tokenizing comments returns an empty vector of html_tokens",
         REQUIRE(result.size() == 0);
     }
 }
+
+TEST_CASE("Tokenizing a symbol returns a vector of html_tokens with a "
+          "token with the corrisponding type",
+          "[html, tokenizer]") {
+    const std::vector<std::string> symbols = {"<", ">", "/", "!", "=", ":",
+                                              "[", "]", "&", ";", "#"};
+
+    const std::vector<html::html_token_type> types = {
+        html::html_token_type::less_than,
+        html::html_token_type::greater_than,
+        html::html_token_type::solidus,
+        html::html_token_type::exclamation_mark,
+        html::html_token_type::equals,
+        html::html_token_type::colon,
+        html::html_token_type::open_square_bracket,
+        html::html_token_type::closed_square_bracket,
+        html::html_token_type::ampersand,
+        html::html_token_type::semicolon,
+        html::html_token_type::number_sign};
+
+    SECTION("Tokenizing a single symbol returns a vector of just that symbol "
+            "and it's type") {
+        for (int i = 0; i < symbols.size(); ++i) {
+            // Arrange
+            html::tokenizer tokenizer(symbols[i]);
+
+            // Act
+            const auto result = tokenizer.tokenize();
+
+            // Assert
+            REQUIRE(result.size() == 1);
+
+            const auto &token = result.at(0);
+            REQUIRE(token.type == types[i]);
+            REQUIRE(token.value == symbols[i]);
+        }
+    }
+
+    SECTION("Tokenizing every symbol in the same string returns a vector of "
+            "each symbol and its type") {
+        std::string symbols_string = "";
+        for (int i = 0; i < symbols.size(); ++i) {
+            symbols_string += symbols[i];
+        }
+
+        // Arrange
+        html::tokenizer tokenizer(symbols_string);
+
+        // Act
+        const auto result = tokenizer.tokenize();
+
+        // Assert
+        REQUIRE(result.size() == symbols.size());
+
+        for (int i = 0; i < symbols.size(); ++i) {
+            const auto &token = result.at(i);
+            REQUIRE(token.type == types[i]);
+            REQUIRE(token.value == symbols[i]);
+        }
+    }
+}
